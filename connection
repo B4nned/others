@@ -1,0 +1,26 @@
+#!/bin/bash
+#by github.com/B4nned
+# Script simples que funciona como um interruptor de conexao( INPUT ) com iptables.
+
+policy=$(iptables -L | grep INPUT | cut -b 21- | sed 's/)//g')				# Pega o atual estado da policy de INPUT
+rule=$(iptables -L INPUT | grep "DROP" | grep all | head -n 1 | cut -b 1) 	# Pega a letra D se existir uma rule de DROP no INPUT
+
+byPolicy () {
+	if [ $policy == "ACCEPT" ]; then 	# Verifica a policy se esta aceitando.
+		iptables -P INPUT DROP		 	# Muda para DROP.
+		iptables -A INPUT -j DROP	 	# Adiciona uma regra de DROP por precaucao.
+		echo "[ - ] Conexao fechada!"
+
+	elif [ $policy == "DROP" ]; then 	# Verifica a policy se esta dropando.
+		iptables -P INPUT ACCEPT	 	# Muda para ACCEPT
+		echo "[ - ] Conexao aberta! $rule"
+		if [ $rule == "D" ]; then	 	# Se existir uma rule de DROP
+			iptables -D INPUT -j DROP 	# Ele remove
+		fi
+	else
+		echo "[ ! ] A policy do INPUT esta diferente de ACCEPT/DROP."	#Erro inexperado
+		echo "[ + ] POLICY: $policy"
+	fi
+}
+
+byPolicy
