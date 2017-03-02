@@ -1,3 +1,5 @@
+#by github.com/B4nned
+
 x=();for i in $(uname -a); do if [ "$i" == "GNU/Linux" ]; then x+=("Linux"); else x+=($i); fi; done; for k in $(seq ${#x[*]} -1 0); do printf "${x[$k]} "; done; echo '';
 
 #x=()
